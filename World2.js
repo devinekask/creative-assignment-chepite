@@ -3,20 +3,27 @@ import Bullets from "./Bullets.js";
 //test enemies
 import Enemy from './Enemy.js'
 //end test enemies
-
+let score;
+function hit(player, enemy){
+  enemy.body.enable= false;
+  enemy.destroy();
+  console.log("hit")
+  score++;
+}
 export default class World extends Phaser.Scene {
   constructor() {
     super("game-scene");
     this.player;
     this.charKey = "player";
     this.cursors;
-
+    
     //test bullet
     this.bullets;
     this.time = 0;
     this.lastFired;
     //test bullet
-    this.enemies = [];
+   // this.enemies = [];
+   this.enemies;
   }
   init() {
     window.addEventListener("resize", this.applyResize);
@@ -36,10 +43,6 @@ export default class World extends Phaser.Scene {
     //enemy test  
     this.load.image("enemy", "./assets/images/enemy.png")
     //end enemy test
-    //boss test
-    //this.load.image("boss", "./assets/images/boss.png")
-    //end boss test
-
     //test player
     this.load.spritesheet(this.charKey, "./assets/sprites/Monk.png", {
       frameWidth: 64,
@@ -51,6 +54,7 @@ export default class World extends Phaser.Scene {
     //end test player
     this.load.tilemapTiledJSON("map", "./world.json");
   }
+  
   create() {
     //const map = this.make.tilemap({key: "map"});
     const map = this.make.tilemap({ key: "map" });
@@ -68,21 +72,40 @@ export default class World extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
 
     //bullet test
-    this.bullets = new Bullets(this);
+     this.bullets = new Bullets(this);
     // this.input.on("pointerdown", (pointer) => {
     //   this.bullets.fireBullet(this.player.x, this.player.y);
     // });
+    this.enemies = this.physics.add.staticGroup({
+      key:"enemy",
+      frameQuantity: 2,
+      immovable: false
+    });
+    let children = this.enemies.getChildren();
+    for (var i = 0; i < children.length; i++)
+    {
+        var x = Phaser.Math.Between(50, 750);
+        var y = Phaser.Math.Between(50, 550);
+
+        children[i].setPosition(x, y);
+    }
+    this.enemies.refresh();
+    //werkt met player
+    //this.physics.add.overlap(this.player, this.enemies, hit);
+    this.physics.add.overlap(this.bullets, this.enemies, hit);
     //end bullet test
 
     //enemies test
-    this.createEnemies(2);
+    //this.createEnemies(2);
     // test hit detection
-        this.physics.add.overlap(this.bullets, this.enemies, this.CollisionHandler);
+        this.physics.add.overlap(this.player, this.enemies, this.CollisionHandler);
 
         //this.enemies.forEach(x=> this.physics.add.overlap(x, this.bullets, this.CollisionHandler))
     //end test hit detection
     //end enemies test
   }
+ 
+
   createEnemies(amount){
     for(let i = 0; i < amount; i++){
       let enemy = new Enemy(this, 100,250);
