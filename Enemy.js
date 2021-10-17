@@ -8,7 +8,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite{
         //define spritename
         //maybe an array with multiple enemy sprites so there is some variation
         this.scene.physics.add.sprite(this.x, this.y, "enemy");
-    }
+        
+}
+
 
 
 
