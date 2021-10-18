@@ -97,9 +97,7 @@ export default class World extends Phaser.Scene {
 
     //bullet test
     this.bullets = new Bullets(this);
-    // this.input.on("pointerdown", (pointer) => {
-    //   this.bullets.fireBullet(this.player.x, this.player.y);
-    // });
+    //end bullet test
     this.enemies = this.physics.add.staticGroup({
       key: "enemy",
       frameQuantity: 6,
@@ -136,6 +134,9 @@ export default class World extends Phaser.Scene {
     //this.enemies.forEach(x=> this.physics.add.overlap(x, this.bullets, this.CollisionHandler))
     //end test hit detection
     //end enemies test
+
+
+    
   }
 
   createEnemies(amount) {
@@ -190,9 +191,15 @@ export default class World extends Phaser.Scene {
       this.player.setVelocityY(0);
       // this.player.play("player-idle", true);
     }
-    if (this.cursors.space.isDown) {
+    // if (this.cursors.space.isDown) {
+    //   this.bullets.fireBullet(this.player.x, this.player.y);
+    // }
+    
+    if (this.input.activePointer.primaryDown ) {
+      
       this.bullets.fireBullet(this.player.x, this.player.y);
     }
+    
   }
   CollisionHandler() {
     console.log("collision");
@@ -206,7 +213,9 @@ export default class World extends Phaser.Scene {
   
   update(time, delta) {
     if(gameOver === true){
+      //laad game over scherm
       location.reload();
+
     }
     //update each game tick
     this.playerMovement();
