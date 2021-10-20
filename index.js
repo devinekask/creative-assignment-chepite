@@ -1,4 +1,4 @@
-import World from "./World2.js";
+import World from "./World3.js";
 const config = {
   type: Phaser.AUTO,
   width: window.innerWidth,
