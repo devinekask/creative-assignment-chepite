@@ -1,12 +1,8 @@
 import Bullets from "./Bullets.js";
+//import Enemy from "./Enemy.js"
 
-//test enemies
-//import Enemy from "./Enemy.js";
 import Enemies from "./Enemies.js";
-//end test enemies
 
-//test boss
-//import Boss2 from "./Boss2.js";
 import Bosses from "./Bosses.js";
 //end test boss
 let score = 0;
@@ -14,10 +10,13 @@ let children;
 let boss;
 let bossSpawned = false;
 let gameOver;
+let spawnPoint;
+
 function hit(player, enemy) {
   if (enemy.health <= 0) {
     score++;
     enemy.destroy();
+    
     console.log("enemy health: ", enemy.health);
   } else {
     console.log("hit", enemy.health);
@@ -65,9 +64,11 @@ export default class World extends Phaser.Scene {
 
   preload() {
     this.load.image("base", "./assets/images/FullGround.png");
-    this.load.image("shroom", "./assets/images/mushroom.png");
+    this.load.image("bullet", "./assets/images/bullet.png");
+    this.load.image("decorationOne", "./assets/Dungeon_B.png");
+    this.load.image("decorationTwo", "./assets/Dungeon_A2.png");
     //bullet test
-    this.load.image("bullet", "./assets/images/mushroom.png");
+    this.load.image("bullet", "./assets/images/bullet.png");
     //bullet test
     //enemy test
     this.load.image("enemy", "./assets/images/enemy.png");
@@ -84,25 +85,51 @@ export default class World extends Phaser.Scene {
     });
 
     //end test player
-    this.load.tilemapTiledJSON("map", "./world.json");
+    //this.load.tilemapTiledJSON("map", "./world.json");
+    this.load.tilemapTiledJSON("map", "./assets/worldV3.json");
   }
-
   create() {
     //const map = this.make.tilemap({key: "map"});
-    const map = this.make.tilemap({ key: "map" });
+    const map = this.make.tilemap({ key: "map" , tileWidth: 32, tileHeight: 32});
+    spawnPoint = map.findObject(
+      "spawns",
+      (obj) => obj.name === "SpawnPoint"
+    );
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
     // Phaser's cache (i.e. the name you used in preload)
-    const tileset = map.addTilesetImage("FullGroundTest", "base");
-    const worldset = map.addTilesetImage("mushroom", "shroom");
-    const bottomlayer = map.createStaticLayer("bottom", tileset, 0, 0);
-    const worldlayer = map.createStaticLayer("world", worldset, 0, 0);
+    // const tileset = map.addTilesetImage("FullGroundTest", "base");
+    // const worldset = map.addTilesetImage("mushroom", "shroom");
+    // const bottomlayer = map.createStaticLayer("bottom", tileset, 0, 0);
+    // const worldlayer = map.createStaticLayer("world", worldset, 0, 0);
+    const tileset = map.addTilesetImage("tiles", "base");
+    const decoration1 = map.addTilesetImage("decoration1", "decorationOne");
+    const decoration2 = map.addTilesetImage("decoration2", "decorationTwo");
+    const wallslayer = map.createStaticLayer("walls", decoration2, spawnPoint.x, spawnPoint.y);
+    const bottomlayer = map.createStaticLayer("bottom", tileset, spawnPoint.x, spawnPoint.y);
+    const decorationlayer = map.createStaticLayer("decoration", decoration1, spawnPoint.x, spawnPoint.y);
+
     //cam
     const camera = this.cameras.main;
-    camera.setZoom(2);
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    //camera.setZoom(2);
+    //camera.setBounds(map.widthInPixels, map.heightInPixels, map.widthInPixels, map.heightInPixels);
+    //collision
+    //this.player.setCollideWorldBounds(true);
+    wallslayer.setCollisionByProperty({collides: true});
+   //this.physics.add.collider(this.player, wallslayer,this)
+      
+    //test debug
+
+    const debugGraphics = this.add.graphics().setAlpha(0.75);
+    wallslayer.renderDebug(debugGraphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+    });
+    //end test debug
+
     //player
     this.createPlayer(map);
-
+    this.cameras.main.startFollow(this.player);
     //test anims
     this.anims.create({
       key: "player-idle",
@@ -141,7 +168,7 @@ export default class World extends Phaser.Scene {
       repeat: 0,
     });
     // end test anims
-    this.cameras.main.startFollow(this.player);
+    
 
     //bullet test
     this.bullets = new Bullets(this);
@@ -160,35 +187,21 @@ export default class World extends Phaser.Scene {
 
       children[i].setPosition(x, y);
     }
-    //this.enemies.refresh();
-    //test boss
-    // boss= this.physics.add.staticGroup({
-    //   key: "boss",
-    //   frameQuantity: 1,
-    //   immovable: false
-    // });
-    //console.log(boss)
-    //let bosses= boss.getChildren();
-    //end test boss
-    //werkt met player
-    //this.physics.add.overlap(this.player, this.enemies, hit);
+
     this.physics.add.overlap(this.bullets, this.enemies, hit);
-    //this.physics.add.overlap(this.bullets, this.bosses, hitBosses);
 
-    //end bullet test
-
-    //enemies test
-    //this.createEnemies(2);
     // test hit detection
     this.physics.add.overlap(this.player, this.enemies, this.CollisionHandler);
 
    
 
-    //this.enemies.forEach(x=> this.physics.add.overlap(x, this.bullets, this.CollisionHandler))
-    //end test hit detection
-    //end enemies test
 
     this.enemies.scaleXY(0.1, 0.1);
+  }
+
+  //get enemies and boss spawnpoints
+  getSpawnpoints(map){
+
   }
 
   createEnemies() {
@@ -197,12 +210,12 @@ export default class World extends Phaser.Scene {
 
   createPlayer(map) {
     //search spawnpoint and add player there
-    const spawnPoint = map.findObject(
-      "objects",
-      (obj) => obj.name === "Spawn Point"
-    );
+    // const spawnPoint = map.findObject(
+    //   "spawns",
+    //   (obj) => obj.name === "SpawnPoint"
+    // );
     console.log(spawnPoint);
-    this.player = this.physics.add.sprite(125, 100, this.charKey);
+    this.player = this.physics.add.sprite(1050, 1050, this.charKey);
     // this.player.setScale(1.5);
     health = 5;
     this.player.setDepth(1);
@@ -251,26 +264,16 @@ export default class World extends Phaser.Scene {
   }
 
   update(time, delta) {
+ 
     
     //update each game tick
     this.playerMovement();
     //boss test
     if (score === 5 && !bossSpawned) {
-      // boss = new Boss2(this,400, 400);
-      // this.enemies.add(boss);
-      // bossSpawned = true;
-      // boss.StartMoving();
-      // this.enemies.add(boss);
-      // //this.add.sprite(boss.x, boss.y,"boss");
-      // console.log(boss)
-      // window.alert("boss")
-      //this.enemies.add(boss);
-      //this.enemies.refresh();
+
       this.bosses = new Bosses(this);
       
-      //boss.StartMoving(this.player.x, this.player.y);
-
-      //boss.StartMoving(this.player.x, this.player.y)
+ 
     }
 
     if (this.bosses && bossSpawned === false) {
@@ -296,8 +299,16 @@ export default class World extends Phaser.Scene {
       );
     }
 
-    //boss movement
+    console.log(children.length);
+    if(children.length <= 5){
+      for(let i = 0; i <2; i++){
+        this.enemies.create(this.player.x + Math.random() * 400, this.player.y + Math.random() * 400, 'enemy');
+      }
+      
+    }
 
+    //boss movement
+  
     //end boss movement
   }
 }

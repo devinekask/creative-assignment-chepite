@@ -24,4 +24,5 @@ export default class Bullets extends Phaser.Physics.Arcade.Group
             //end og code
         }
     }
+   
 }

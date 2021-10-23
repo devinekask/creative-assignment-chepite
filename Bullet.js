@@ -33,8 +33,13 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
 
         //fully working
         //*50 is nodig omdat anders de angles bijna niet te zien zijn
-        let angle = Phaser.Math.Angle.BetweenPoints(this.scene.player, this.scene.input.mousePointer)*75  ;
-        const dir = this.scene.physics.velocityFromAngle(angle, 200 , this.body.velocity);
+        let angle = Phaser.Math.Angle.BetweenPoints(this.scene.player, this.scene.input.mousePointer)*60;
+
+        if(this.scene.input.mousePointer.worldY > this.scene.player.y){
+            angle= angle *-1
+        }
+        let dir = this.scene.physics.velocityFromAngle(angle, 200 , this.body.velocity);
+        console.log(dir)
         this.setVelocityY(dir.y)
         this.setVelocityX(dir.x)
         //end fully working
@@ -45,11 +50,12 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
        
         super.preUpdate(time, delta);
         
-
-        // if (this.y <= this.scene.player.y-100 || this.y >= this.scene.player.y +100 ||this.x <= this.scene.player.x-100 || this.x >= this.scene.player.x +100 )
-        // {
-        //     this.setActive(false);
-        //     this.setVisible(false);
-        // }
+        //bullet hitbox
+        if (this.y <= this.scene.player.y-250 || this.y >= this.scene.player.y +250 ||this.x <= this.scene.player.x-250|| this.x >= this.scene.player.x +250)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+            this.destroy()
+        }
     }
 }

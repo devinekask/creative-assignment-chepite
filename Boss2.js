@@ -1,7 +1,7 @@
 export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'boss');
-    this.health = 500;
+    this.health = 1500;
   }
 
   Spawn() {
