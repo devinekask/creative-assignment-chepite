@@ -22,9 +22,12 @@ export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
     //end test enemy movement
   }
 
+  
+
   StartMoving(x, y) {
     //og code
     this.Spawn(x, y);
     //end og code
   }
+  
 }

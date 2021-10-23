@@ -11,6 +11,12 @@ let boss;
 let bossSpawned = false;
 let gameOver;
 let spawnPoint;
+let scoreText;
+//test special ove
+  let nades = 1;
+  let text ;
+  //let groundpunched = false;
+//end test
 
 function hit(player, enemy) {
   if (enemy.health <= 0) {
@@ -62,32 +68,32 @@ export default class World extends Phaser.Scene {
     this.width = window.innerWidth;
   }
 
-  preload() {
-    this.load.image("base", "./assets/images/FullGround.png");
-    this.load.image("bullet", "./assets/images/bullet.png");
-    this.load.image("decorationOne", "./assets/Dungeon_B.png");
-    this.load.image("decorationTwo", "./assets/Dungeon_A2.png");
-    //bullet test
-    this.load.image("bullet", "./assets/images/bullet.png");
-    //bullet test
-    //enemy test
-    this.load.image("enemy", "./assets/images/enemy.png");
-    //end enemy test
-    //boss test
-    this.load.image("boss", "./assets/images/boss.png");
-    //end boss test
-    //test player
-    this.load.spritesheet(this.charKey, "./assets/sprites/sprite_map.png", {
-      frameWidth: 64,
-      frameHeight: 64,
-      margin: 0,
-      spacing: 0,
-    });
+  // preload() {
+  //   this.load.image("base", "./assets/images/FullGround.png");
+  //   this.load.image("bullet", "./assets/images/bullet.png");
+  //   this.load.image("decorationOne", "./assets/Dungeon_B.png");
+  //   this.load.image("decorationTwo", "./assets/Dungeon_A2.png");
+  //   //bullet test
+  //   this.load.image("bullet", "./assets/images/bullet.png");
+  //   //bullet test
+  //   //enemy test
+  //   this.load.image("enemy", "./assets/images/enemy.png");
+  //   //end enemy test
+  //   //boss test
+  //   this.load.image("boss", "./assets/images/boss.png");
+  //   //end boss test
+  //   //test player
+  //   this.load.spritesheet(this.charKey, "./assets/sprites/sprite_map.png", {
+  //     frameWidth: 64,
+  //     frameHeight: 64,
+  //     margin: 0,
+  //     spacing: 0,
+  //   });
 
-    //end test player
-    //this.load.tilemapTiledJSON("map", "./world.json");
-    this.load.tilemapTiledJSON("map", "./assets/worldV3.json");
-  }
+  //   //end test player
+  //   //this.load.tilemapTiledJSON("map", "./world.json");
+  //   this.load.tilemapTiledJSON("map", "./assets/worldV3.json");
+  // }
   create() {
     //const map = this.make.tilemap({key: "map"});
     const map = this.make.tilemap({ key: "map" , tileWidth: 32, tileHeight: 32});
@@ -197,6 +203,9 @@ export default class World extends Phaser.Scene {
 
 
     this.enemies.scaleXY(0.1, 0.1);
+
+    text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+
   }
 
   //get enemies and boss spawnpoints
@@ -222,20 +231,30 @@ export default class World extends Phaser.Scene {
   }
 
   playerMovement() {
-    if (this.cursors.left.isDown) {
+    //make keys and cursors
+    this.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+
+    //special move test
+    this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    
+    //end special move test
+    if (this.cursors.left.isDown || this.keyQ.isDown) {
       this.player.setVelocityX(-150);
       this.player.flipX = true;
       //this.player.play(`left`, true);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || this.keyD.isDown) {
       this.player.setVelocityX(150);
       this.player.flipX = false;
       //this.player.play(`right`, true);
-    } else if (this.cursors.up.isDown) {
+    } else if (this.cursors.up.isDown || this.keyZ.isDown) {
       this.player.setVelocityY(-150);
       this.player.play("walk-up", true);
 
       //this.player.play(`right`, true);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors.down.isDown || this.keyS.isDown) {
       this.player.setVelocityY(150);
       //this.player.play(`right`, true);
       this.player.play("walk-down", true);
@@ -252,26 +271,46 @@ export default class World extends Phaser.Scene {
       this.bullets.fireBullet(this.player.x, this.player.y);
       this.player.play("shoot", true);
     }
+    
+    //nade deals 750 damage to all enemies making them oneshot (instakill from cod zombies)
+    if(this.keyE.isDown && this.enemies && nades > 0){
+      text.destroy();
+      nades--;
+      text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+      //console.log(children)
+      children.forEach(element => element.health -=750)
+    }
   }
-  CollisionHandler() {
+  //async was needed because function kept beeing called and reload didn't have time to complete
+  async CollisionHandler () {
     console.log("collision");
     health -= 0.05;
     console.log("health: ", health);
     if (health <= 0) {
+      // zorg voor text overlay met button
+      //als button geklikt wordt location.reload
       console.log("game over");
-      location.reload();
+      await location.reload();
+      
+     
     }
   }
 
   update(time, delta) {
- 
-    
+    scoreText = this.add.text(16, 16, `Score: ${score}` , { fontSize: '32px', fill: '#000' });
+    if(text){
+    text.x = this.player.x;
+    text.y = this.player.y - 48;
+    }
     //update each game tick
     this.playerMovement();
     //boss test
     if (score === 5 && !bossSpawned) {
 
       this.bosses = new Bosses(this);
+      text.destroy();
+      nades++;
+      text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
       
  
     }
@@ -285,24 +324,26 @@ export default class World extends Phaser.Scene {
       
       
     }
-
+   
     //end boss test
     //enemy movement
     children.forEach((element) => {
       element.StartMoving(this.player.x, this.player.y);
     });
-
+    let bosschildren;
     if(this.bosses){
-      let bosschildren = this.bosses.getChildren();
+       bosschildren = this.bosses.getChildren();
        bosschildren.forEach((element) =>
         element.StartMoving(this.player.x, this.player.y)
       );
     }
-
+    
+   
+    
     console.log(children.length);
     if(children.length <= 5){
       for(let i = 0; i <2; i++){
-        this.enemies.create(this.player.x + Math.random() * 400, this.player.y + Math.random() * 400, 'enemy');
+        this.enemies.create(this.player.x + Math.random() * 800, this.player.y + Math.random() * 800, 'enemy');
       }
       
     }
