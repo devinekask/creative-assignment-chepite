@@ -17,6 +17,19 @@ export default class GameOver extends Phaser.Scene
           fontSize: "100px",
           align: "center",
         });
+        const restart = this.add
+        .text(window.innerWidth/5 , window.innerHeight/2.5 , "press space to restart", {
+          fontSize: "35px",
+          align: "center",
+        });
         this.physics.add.existing(lost);
+        this.physics.add.existing(Slain);
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        
+    }
+    update(){
+        if(this.keySpace.isDown){
+           location.reload();
+        }
     }
 }

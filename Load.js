@@ -5,6 +5,7 @@ export default class Load extends Phaser.Scene
         this.charKey = "player";
     }
     preload() {
+        
         this.load.image("base", "./assets/images/FullGround.png");
         this.load.image("bullet", "./assets/images/bullet.png");
         this.load.image("decorationOne", "./assets/Dungeon_B.png");

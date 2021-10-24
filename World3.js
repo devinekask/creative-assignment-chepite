@@ -88,7 +88,7 @@ export default class World extends Phaser.Scene {
     );
     //cam
     const camera = this.cameras.main;
-    camera.setZoom(1.5);
+    camera.setZoom(1.4);
     this.createPlayer(map);
     //debug
     // const debugGraphics = this.add.graphics().setAlpha(0.75);
