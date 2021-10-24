@@ -7,7 +7,6 @@ export default class GameOver extends Phaser.Scene
     create(){
        //console.log(World3.TellScore());
        const GameScore = localStorage.getItem('score');
-
         const lost = this.add
         .text(window.innerWidth/5 , window.innerHeight/2 , `Enemies slain: ${GameScore}`, {
           fontSize: "50px",

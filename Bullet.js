@@ -7,18 +7,6 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
         super(scene, x, y, 'bullet');
         
     }
-
-    // fire (x, y)
-    // {
-        
-    //     this.body.reset(x, y);
-
-    //     this.setActive(true);
-    //     this.setVisible(true);
-
-    //     //zorg voor modular shooting -> schiet naar kant waar character nu naar kijkt --> doe gewoon met muis
-    //     this.setVelocityY(-300);
-    // }
     fire (x, y)
     {
         // //og
@@ -32,14 +20,12 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
         // //end og
 
         //fully working
-        //*50 is nodig omdat anders de angles bijna niet te zien zijn
         let angle = Phaser.Math.Angle.BetweenPoints(this.scene.player, this.scene.input.mousePointer)*75;
 
         if(this.scene.input.mousePointer.worldY > this.scene.player.y){
             angle= angle *-1
         }
         let dir = this.scene.physics.velocityFromAngle(angle, 200 , this.body.velocity);
-       // console.log(dir)
         this.setVelocityY(dir.y)
         this.setVelocityX(dir.x)
         //end fully working

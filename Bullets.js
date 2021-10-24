@@ -16,7 +16,6 @@ export default class Bullets extends Phaser.Physics.Arcade.Group
     fireBullet (x, y)
     {
         let bullet = this.getFirstDead(true);
-        //let bullet = this.getFirstDead(true);
         if (bullet)
         {
             //og code
