@@ -1,6 +1,6 @@
 export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
-    super(scene, 1050, 1050, 'boss');
+    super(scene, x, y, 'boss');
     this.health = 1500;
   }
 
@@ -14,7 +14,7 @@ export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
     //console.log("velocity body ", this.body.velocity);
     const dir = this.scene.physics.velocityFromAngle(
       angle,
-      50,
+      100,
       this.body.velocity
     );
     this.setVelocityY(dir.y);
@@ -26,7 +26,7 @@ export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
 
   StartMoving(x, y) {
     //og code
-    this.Spawn(1050, 1050);
+    this.Spawn(x, y);
     //end og code
   }
   

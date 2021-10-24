@@ -29,7 +29,10 @@ export default class Load extends Phaser.Scene
         //end test player
         //this.load.tilemapTiledJSON("map", "./world.json");
         this.load.tilemapTiledJSON("map", "./assets/worldV3.json");
-      }
+        this.load.on("progress", (percent) => {
+         console.log(percent)
+      });
+    }
       create() {
         console.log("loaded");
         this.scene.start("game-scene");

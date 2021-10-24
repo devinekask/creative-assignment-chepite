@@ -15,6 +15,7 @@ let scoreText;
 //test special ove
   let nades = 1;
   let text ;
+  let bossesSlain = 0;
   //let groundpunched = false;
 //end test
 
@@ -22,7 +23,7 @@ function hit(player, enemy) {
   if (enemy.health <= 0) {
     score++;
     enemy.destroy();
-    
+    console.log(score)
     //console.log("enemy health: ", enemy.health);
   } else {
   //  console.log("hit", enemy.health);
@@ -33,8 +34,12 @@ function hitBosses(player, boss) {
  // console.log("boss hit", boss.health)
   if(boss.health <=0){
     boss.destroy();
-    gameOver = true;
-    location.reload();
+    bossesSlain++;
+    if(bossesSlain === 3){
+      gameOver = true;
+     // location.reload();
+    }
+    
   }
   else{
     boss.health--;
@@ -42,7 +47,7 @@ function hitBosses(player, boss) {
   }
 
 }
-let health = 5;
+let health = 10;
 export default class World extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -192,8 +197,8 @@ export default class World extends Phaser.Scene {
     // });
     children = this.enemies.getChildren();
     for (var i = 0; i < children.length; i++) {
-      var x = Phaser.Math.Between(50, 750);
-      var y = Phaser.Math.Between(50, 550);
+      var x = Phaser.Math.Between(1300, 1500);
+      var y = Phaser.Math.Between(1300, 1500);
 
       children[i].setPosition(x, y);
     }
@@ -208,7 +213,7 @@ export default class World extends Phaser.Scene {
 
     this.enemies.scaleXY(0.1, 0.1);
 
-    text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+    text = this.add.text(this.player.x, this.player.y, `'Use nade: E`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
     wallslayer.setCollisionByProperty({collides: true});
     this.physics.add.collider(this.enemies, wallslayer);
     this.physics.add.collider(this.player, wallslayer);
@@ -282,31 +287,36 @@ export default class World extends Phaser.Scene {
     if(this.keyE.isDown && this.enemies && nades > 0){
       text.destroy();
       nades--;
-      text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+      text = this.add.text(this.player.x, this.player.y, `'Use nade: E`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
       //console.log(children)
       children.forEach(element => element.health -=750)
     }
   }
   //async was needed because function kept beeing called and reload didn't have time to complete
-  async CollisionHandler () {
+   CollisionHandler () {
    // console.log("collision");
     health -= 0.05;
     //console.log("health: ", health);
     if (health <= 0) {
       // zorg voor text overlay met button
       //als button geklikt wordt location.reload
-      console.log("game over");
-      await location.reload();
+      //console.log("game over");
+      //await location.reload();
+       gameOver =true;
+
       
      
     }
   }
 
   update(time, delta) {
-    
-        
-  
-    scoreText = this.add.text(16, 16, `Score: ${score}` , { fontSize: '32px', fill: '#000' });
+    if(gameOver === true){
+      let myStorage = window.localStorage;
+      localStorage.setItem('score', score);
+
+      this.scene.start("GameOver");
+    }
+    // scoreText = this.add.text(16, 16, `Score: ${score}` , { fontSize: '32px', fill: '#000' });
     if(text){
     text.x = this.player.x;
     text.y = this.player.y - 48;
@@ -316,12 +326,24 @@ export default class World extends Phaser.Scene {
     //boss test
     if (score === 5 && !bossSpawned) {
 
-      this.bosses = new Bosses(this);
+      this.bosses = new Bosses(this,1050,1050);
       text.destroy();
       nades++;
-      text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
-      
- 
+      text = this.add.text(this.player.x, this.player.y, `'Use nade: E`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+    }
+    if (score === 10 && !bossSpawned) {
+
+      this.bosses = new Bosses(this,1050,1050);
+      text.destroy();
+      nades++;
+      text = this.add.text(this.player.x, this.player.y, `'Use nade: E`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+    }
+    if (score === 25 && !bossSpawned) {
+
+      this.bosses = new Bosses(this,1050,1050);
+      text.destroy();
+      nades++;
+      text = this.add.text(this.player.x, this.player.y, `'Use nade: E`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
     }
 
     if (this.bosses && bossSpawned === false) {
@@ -347,19 +369,14 @@ export default class World extends Phaser.Scene {
       );
     }
     
-   
-    
-    console.log(children.length);
+    //console.log(children.length);
     if(children.length <= 5){
       for(let i = 0; i <2; i++){
-        this.enemies.create(this.player.x + Math.random() * 800, this.player.y + Math.random() * 800, 'enemy');
+        this.enemies.create(1050 + Math.random() * 500, 1050 + Math.random() * 500, 'enemy');
       }
       
     }
-
     //boss movement
-  
     //end boss movement
-      
   }
 }

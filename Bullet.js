@@ -33,7 +33,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
 
         //fully working
         //*50 is nodig omdat anders de angles bijna niet te zien zijn
-        let angle = Phaser.Math.Angle.BetweenPoints(this.scene.player, this.scene.input.mousePointer)*60;
+        let angle = Phaser.Math.Angle.BetweenPoints(this.scene.player, this.scene.input.mousePointer)*75;
 
         if(this.scene.input.mousePointer.worldY > this.scene.player.y){
             angle= angle *-1
