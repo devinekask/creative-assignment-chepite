@@ -39,7 +39,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite
             angle= angle *-1
         }
         let dir = this.scene.physics.velocityFromAngle(angle, 200 , this.body.velocity);
-        console.log(dir)
+       // console.log(dir)
         this.setVelocityY(dir.y)
         this.setVelocityX(dir.x)
         //end fully working

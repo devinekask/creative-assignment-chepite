@@ -23,14 +23,14 @@ function hit(player, enemy) {
     score++;
     enemy.destroy();
     
-    console.log("enemy health: ", enemy.health);
+    //console.log("enemy health: ", enemy.health);
   } else {
-    console.log("hit", enemy.health);
+  //  console.log("hit", enemy.health);
     enemy.health--;
   }
 }
 function hitBosses(player, boss) {
-  console.log("boss hit", boss.health)
+ // console.log("boss hit", boss.health)
   if(boss.health <=0){
     boss.destroy();
     gameOver = true;
@@ -67,7 +67,7 @@ export default class World extends Phaser.Scene {
     this.height = window.innerHeight;
     this.width = window.innerWidth;
   }
-
+  preload(){}
   // preload() {
   //   this.load.image("base", "./assets/images/FullGround.png");
   //   this.load.image("bullet", "./assets/images/bullet.png");
@@ -120,21 +120,25 @@ export default class World extends Phaser.Scene {
     //camera.setBounds(map.widthInPixels, map.heightInPixels, map.widthInPixels, map.heightInPixels);
     //collision
     //this.player.setCollideWorldBounds(true);
-    wallslayer.setCollisionByProperty({collides: true});
+    
+
    //this.physics.add.collider(this.player, wallslayer,this)
       
-    //test debug
-
-    const debugGraphics = this.add.graphics().setAlpha(0.75);
-    wallslayer.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-    });
-    //end test debug
+  
 
     //player
     this.createPlayer(map);
+    
+    
+      //test debug
+
+      const debugGraphics = this.add.graphics().setAlpha(0.75);
+      wallslayer.renderDebug(debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      });
+      //end test debug
     this.cameras.main.startFollow(this.player);
     //test anims
     this.anims.create({
@@ -179,7 +183,7 @@ export default class World extends Phaser.Scene {
     //bullet test
     this.bullets = new Bullets(this);
     this.enemies = new Enemies(this);
-
+   
     //end bullet test
     // this.enemies = this.physics.add.staticGroup({
     //   key: "enemy",
@@ -205,7 +209,9 @@ export default class World extends Phaser.Scene {
     this.enemies.scaleXY(0.1, 0.1);
 
     text = this.add.text(this.player.x, this.player.y, `'nades left: ${nades}`, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
-
+    wallslayer.setCollisionByProperty({collides: true});
+    this.physics.add.collider(this.enemies, wallslayer);
+    this.physics.add.collider(this.player, wallslayer);
   }
 
   //get enemies and boss spawnpoints
@@ -283,9 +289,9 @@ export default class World extends Phaser.Scene {
   }
   //async was needed because function kept beeing called and reload didn't have time to complete
   async CollisionHandler () {
-    console.log("collision");
+   // console.log("collision");
     health -= 0.05;
-    console.log("health: ", health);
+    //console.log("health: ", health);
     if (health <= 0) {
       // zorg voor text overlay met button
       //als button geklikt wordt location.reload
@@ -297,6 +303,9 @@ export default class World extends Phaser.Scene {
   }
 
   update(time, delta) {
+    
+        
+  
     scoreText = this.add.text(16, 16, `Score: ${score}` , { fontSize: '32px', fill: '#000' });
     if(text){
     text.x = this.player.x;
@@ -351,5 +360,6 @@ export default class World extends Phaser.Scene {
     //boss movement
   
     //end boss movement
+      
   }
 }

@@ -1,6 +1,6 @@
 export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
-    super(scene, x, y, 'boss');
+    super(scene, 1050, 1050, 'boss');
     this.health = 1500;
   }
 
@@ -26,7 +26,7 @@ export default class Boss2 extends Phaser.Physics.Arcade.Sprite {
 
   StartMoving(x, y) {
     //og code
-    this.Spawn(x, y);
+    this.Spawn(1050, 1050);
     //end og code
   }
   
